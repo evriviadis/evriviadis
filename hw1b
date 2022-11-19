@@ -1,0 +1,79 @@
+/* 
+ * ONOMATEPWNYMO: 
+ * AEM: 
+ */
+#include"hw1.h"
+#include <stdio.h>
+#include <math.h>
+
+/*int highest_of_2(int x, int y){
+	if(x>y){
+		return x;
+	}
+	if(y>x){
+		return y;
+	}
+	if(x==y){
+		return x;
+	}
+}*/
+int max(int x, int y){
+    if(y>x){
+        return y;
+    }else{
+        return x;
+    }
+}
+int highest_of_3(int x, int y, int z){
+   return max(x,max(y,z));
+}
+int highest_of_7(int x, int y, int z, int w, int t, int s, int u){
+	return highest_of_3(highest_of_3(x,y,z),highest_of_3(w,t,s),u);
+}
+
+int main (int argc, char *argv[]) {
+	unsigned short int voters_info[MAX_VOTERS]={0}, age_mask, gender_mask, vote_mask, voters_age[MAX_VOTERS]={0}, voters_gender[MAX_VOTERS]={0}, voters_vote[MAX_VOTERS]={0};
+	unsigned short int voters_fixed_info[MAX_VOTERS][MAX_VOTERS][MAX_VOTERS]={0};
+	int i, j, candidate[NUM_CANDIDATES]={0};
+	age_mask=0xFE00;
+	gender_mask=0x180;
+	vote_mask=0x7F;
+
+    for(i=0; i<MAX_VOTERS;i++){
+		printf("Enter voter info:");
+		scanf(" %hx",&voters_info[i]);
+
+	    if(voters_info[i]==0){
+			break;
+		}
+
+		voters_age[i] = voters_info[i] & age_mask ;
+		voters_age[i]>>9;
+		voters_gender[i] = voters_info[i] & gender_mask;
+        voters_gender[i]>>7;
+		voters_vote[i] = voters_info[i] & vote_mask;
+
+		if(voters_age[i]<18){
+			printf("Invalid age %hx.",voters_age[i]);
+		}else if(voters_gender[i]<1){
+                  printf("Invalid gender.");
+			  }else if(voters_vote[i]!=1 && voters_vote[i]!=2 && voters_vote[i]!=4 && voters_vote[i]!=8 && voters_vote[i]!=16 && voters_vote[i]!=32 && voters_vote[i]!=64){
+                        printf("Invalid vote %hx",voters_vote[i]);
+			        }else{
+							voters_fixed_info[i][MAX_VOTERS][MAX_VOTERS] = voters_age[i];
+							voters_fixed_info[MAX_VOTERS][i][MAX_VOTERS] = voters_gender[i];
+							voters_fixed_info[MAX_VOTERS][MAX_VOTERS][i] = voters_vote[i];
+						}
+        
+	}
+    for(i=0;i<MAX_VOTERS;i++){
+		for(j=0;j<NUM_CANDIDATES;j++){
+			if(voters_vote[i]==pow(2, j)){
+				candidate[j]++;
+			}
+		}
+	} 
+    printf("%d",highest_of_7(candidate[0],candidate[1],candidate[2],candidate[3],candidate[4],candidate[5],candidate[6]));
+
+	return 0;
+}
